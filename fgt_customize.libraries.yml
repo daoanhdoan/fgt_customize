@@ -1,0 +1,4 @@
+fgt_customize:
+  css:
+    component:
+      css/fgt_customize.css: {}

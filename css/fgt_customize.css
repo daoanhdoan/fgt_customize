@@ -1,0 +1,7 @@
+table.fgt-customize-table {
+  width: auto;
+}
+.table-row-label {
+  font-weight: bold;
+  min-width: 170px;
+}

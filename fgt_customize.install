@@ -1,0 +1,8 @@
+<?php
+
+/**
+ * @see hook_install()
+ */
+function fgt_customize_install() {
+  module_set_weight('fgt_customize', 999999);
+}
