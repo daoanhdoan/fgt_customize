@@ -1,9 +1,12 @@
 {
-  "name": "daoanhdoan/fgt_customize",
-  "description": "Field Group Table - Customize - Render fields in a 2-column table.",
-  "type": "drupal-custom-module",
-  "license":"GPL-2.0",
-  "extra": {
-    "installer-name": "fgt_customize"
-  }
+    "name" : "daoanhdoan/fgt_customize",
+    "description": "Field Group Table - Customize - Render fields in a 2-column table.",
+    "type" : "drupal-custom-module",
+    "license": "GPL-2.0",
+    "extra": {
+        "installer-name": "fgt_customize"
+    },
+    "require": {
+        "field_group/field_group_table": "*"
+    }
 }
