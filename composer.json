@@ -7,8 +7,8 @@
         "installer-name": "fgt_customize"
     },
     "require": {
-        "field_group/field_group_table": "*",
-        "field_group/field_group": "*",
+        "drupal/field_group_table": "*",
+        "drupal/field_group": "*",
         "drupal/field": "*"
     }
 }
