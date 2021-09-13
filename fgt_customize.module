@@ -12,22 +12,13 @@ function fgt_customize_field_group_form_process_build_alter(array &$element, For
     if ($group->format_type !== 'fgt_customize') {
       continue;
     }
-    $manager = Drupal::service('plugin.manager.field_group.formatters');
-    $plugin = $manager->getInstance([
-      'format_type' => $group->format_type,
-      'configuration' => ['label' => $group->label, 'settings' => $group->format_settings],
-      'group' => $group,
-    ]);
     $children = !empty($group->children) ? $group->children : NULL;
     if (!$children) {
       continue;
     }
     foreach ($children as $key => $field_name) {
-      if (isset($element[$field_name]) && empty($element[$group_name]['table'][$field_name])) {
-        if ($row = $plugin->buildRow($element, $field_name)) {
-          $element[$group_name]['table'][$field_name] = $row;
-          unset($element[$field_name]);
-        }
+      if (isset($element[$field_name])) {
+        unset($element[$field_name]);
       }
     }
   }
