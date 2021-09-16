@@ -44,7 +44,44 @@ class FieldGroupTableCustomize extends FieldGroupTable implements ContainerFacto
         }
       }
     }
-    parent::preRender($element, $rendering_object);
+    $element['#mode'] = $this->context;
+    // Allow modules to alter the rows, useful for removing empty rows.
+    $children = Element::children($element, TRUE);
+    $this->moduleHandler->alter('field_group_table_rows', $element, $children);
+
+    if ($this->getSetting('hide_table_if_empty')) {
+      field_group_remove_empty_display_groups($element, []);
+      if ($element == []) {
+        return;
+      }
+    }
+
+    $element['#type'] = 'container';
+    $element['#attributes']['class'][] = 'field-group-table';
+    $element['#attributes']['class'][] = $this->group->group_name;
+
+    $element['header'] = $this->buildAdditionalContent(self::ADD_CONTENT_HEADER);
+
+    $element['table'] = [
+      '#type' => 'table',
+      '#caption' => $this->getSetting('label_visibility') == self::DISPLAY_CAPTION ? $this->group->label : NULL,
+      '#header' => $this->getTableHeader(),
+      '#attributes' => [
+        'class' => array_merge(
+          $this->getTableCssClasses($element),
+          explode(' ', $this->getSetting('classes'))
+        ),
+      ]
+    ];
+
+    $element['footer'] = $this->buildAdditionalContent(self::ADD_CONTENT_FOOTER);
+
+    foreach ($children as $key => $field_name) {
+      if ($row = $this->buildRow($element, $field_name)) {
+        $element['table'][$field_name] = $row;
+      }
+      unset($element[$field_name]);
+    }
 
     $element['table']['#attached'] = ['library' => ['fgt_customize/fgt_customize']];
     $element['table']['#attributes']['class'][] = 'fgt-customize-table';
@@ -63,7 +100,23 @@ class FieldGroupTableCustomize extends FieldGroupTable implements ContainerFacto
    */
   public function buildRow(array $element, $field_name)
   {
-    $build = parent::buildRow($element, $field_name);
+    $item = $this->getRowItem($element, $field_name);
+    $build = [];
+
+    if (!$item) {
+      return $build;
+    }
+
+    switch ($this->context) {
+
+      case 'view':
+        $build = $this->buildRowView($item);
+        break;
+
+      case 'form':
+        $build = $this->buildRowForm($item);
+        break;
+    }
     $build['#attributes']['class'][] = 'table-row';
     $build['#attributes']['no_striping'] = !$this->getSetting('table_row_striping');
     return $build;
@@ -161,6 +214,7 @@ class FieldGroupTableCustomize extends FieldGroupTable implements ContainerFacto
       if (!$this->getSetting('always_show_field_label')) {
         $this->hideElementTitle($element);
       }
+      $field_name = $element['widget']['#field_name'];
       $build = [
         [
           'title' => [
@@ -171,8 +225,8 @@ class FieldGroupTableCustomize extends FieldGroupTable implements ContainerFacto
           '#wrapper_attributes' => ['class' => ['table-row-label']],
         ],
         [
-          'data' => $element['widget'],
-          '#wrapper_attributes' => ['class' => ['table-row-data']],
+          $field_name => $element['widget'],
+          '#wrapper_attributes' => ['class' => array_merge($element['#attributes']['class'], ['table-row-data'])],
         ],
       ];
     } else {
