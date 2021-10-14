@@ -5,3 +5,6 @@ table.fgt-customize-table {
   font-weight: bold;
   min-width: 170px;
 }
+.table-row-data label:not(.option), .table-row-data .label {
+  display: none;
+}
